@@ -83,5 +83,13 @@ picker.addEventListener('change',()=>{
  (file.size/1024/1024).toFixed(2)+" MB";
 });
 </script>
+ <script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .catch(error => console.log("SW error:", error));
+  });
+}
+</script>
 </body>
 </html>
