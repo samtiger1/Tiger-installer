@@ -5,127 +5,64 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tiger Installer</title>
-
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#10131c">
 
 <style>
 *{box-sizing:border-box}
-
 body{
- margin:0;
- background:#0b0d12;
- color:#fff;
+ margin:0;background:#0b0d12;color:#fff;
  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
  padding:22px 17px 40px;
 }
-
-header{
- display:flex;
- align-items:center;
- gap:13px;
- margin-bottom:30px;
-}
-
+header{display:flex;align-items:center;gap:13px;margin-bottom:30px}
 .logo{font-size:42px}
-
-h1{
- font-size:22px;
- margin:0;
- letter-spacing:1px;
-}
-
+h1{font-size:22px;margin:0;letter-spacing:1px}
 small,.muted{color:#a0a7b5}
-
 .gold{color:#f2b544}
-
 .hero{
  background:linear-gradient(140deg,#252a35,#11141c);
- border:1px solid #594523;
- border-radius:22px;
- padding:23px;
- margin-bottom:25px;
+ border:1px solid #594523;border-radius:22px;
+ padding:23px;margin-bottom:25px;
 }
-
-.hero h2{
- font-size:27px;
- margin:10px 0;
-}
-
+.hero h2{font-size:27px;margin:10px 0}
 .card{
- background:#171c26;
- border:1px solid #303744;
- padding:19px;
- border-radius:18px;
- margin:13px 0;
+ background:#171c26;border:1px solid #303744;
+ padding:19px;border-radius:18px;margin:13px 0;
 }
-
 h2{font-size:20px}
-
-.grid{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:12px;
-}
-
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .tool{
- background:#171c26;
- border:1px solid #303744;
- padding:18px 12px;
- border-radius:17px;
- min-height:110px;
+ background:#171c26;border:1px solid #303744;
+ padding:18px 12px;border-radius:17px;min-height:110px;
 }
-
-.tool strong{
- display:block;
- margin-top:12px;
-}
-
+.tool strong{display:block;margin-top:12px}
 .tool span{font-size:25px}
-
-.upload{
- display:block;
- width:100%;
- padding:15px;
- border:0;
- border-radius:12px;
- background:linear-gradient(100deg,#f6c45d,#d99224);
- color:#171717;
- font-weight:800;
- font-size:15px;
- text-align:center;
- cursor:pointer;
+.upload,.action{
+ display:block;width:100%;padding:15px;border:0;
+ border-radius:12px;background:linear-gradient(100deg,#f6c45d,#d99224);
+ color:#171717;font-weight:800;font-size:15px;
+ text-align:center;cursor:pointer;
 }
-
 input[type=file]{display:none}
-
-.item{
- padding:13px 0;
- border-bottom:1px solid #303744;
+.item{padding:13px 0;border-bottom:1px solid #303744}
+.status{color:#f2b544;font-weight:700}
+.app-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #303744}
+.remove{
+ background:#493039;color:#fff;border:0;
+ padding:9px 12px;border-radius:9px;
 }
-
-.status{
- color:#f2b544;
- font-weight:700;
-}
-
-footer{
- text-align:center;
- color:#788397;
- margin-top:35px;
- font-size:12px;
-}
+footer{text-align:center;color:#788397;margin-top:35px;font-size:12px}
 </style>
 </head>
 
 <body>
-
 <header>
  <div class="logo">🐯</div>
  <div>
   <h1>TIGER <span class="gold">INSTALLER</span></h1>
-  <small>PERSONAL IPA MANAGER • V2.0</small>
+  <small>PERSONAL IPA MANAGER • V2.1</small>
  </div>
 </header>
 
@@ -138,74 +75,90 @@ footer{
 <div class="card">
  <h2>📦 Import IPA</h2>
  <p class="muted">Select an IPA file from your iPhone.</p>
-
- <label class="upload" for="ipa">
-  ＋ SELECT IPA FILE
- </label>
-
+ <label class="upload" for="ipa">＋ SELECT IPA FILE</label>
  <input id="ipa" type="file" accept=".ipa">
-
- <div id="result" class="item muted">
-  No file selected
- </div>
+ <div id="result" class="item muted">No file selected</div>
 </div>
 
 <h2>My Tools</h2>
-
 <div class="grid">
- <div class="tool">
-  <span>📁</span>
-  <strong>My Apps</strong>
-  <small>App library</small>
- </div>
+ <div class="tool"><span>📁</span><strong>My Apps</strong><small>App library</small></div>
+ <div class="tool"><span>🛡️</span><strong>Certificates</strong><small>Signing details</small></div>
+ <div class="tool"><span>✍️</span><strong>IPA Signer</strong><small>Signing workspace</small></div>
+ <div class="tool"><span>⚙️</span><strong>Settings</strong><small>App preferences</small></div>
+</div>
 
- <div class="tool">
-  <span>🛡️</span>
-  <strong>Certificates</strong>
-  <small>Signing details</small>
- </div>
-
- <div class="tool">
-  <span>✍️</span>
-  <strong>IPA Signer</strong>
-  <small>Signing workspace</small>
- </div>
-
- <div class="tool">
-  <span>⚙️</span>
-  <strong>Settings</strong>
-  <small>App preferences</small>
- </div>
+<div class="card">
+ <h2>📁 My Apps</h2>
+ <div id="appList" class="muted">No apps added yet.</div>
 </div>
 
 <div class="card">
  <h2>🛡️ Signing Status</h2>
  <p class="status">● Not connected</p>
  <p class="muted">No signing certificate connected.</p>
- <p class="muted">
-  Actual signing and installation are not available in this web dashboard yet.
- </p>
+ <p class="muted">Actual signing and installation require a separate authorized workflow.</p>
 </div>
 
-<footer>
- TIGER INSTALLER • MADE FOR iPHONE 🐯
-</footer>
+<footer>TIGER INSTALLER • MADE FOR iPHONE 🐯</footer>
 
 <script>
-const picker=document.getElementById('ipa');
-const result=document.getElementById('result');
+const picker=document.getElementById("ipa");
+const result=document.getElementById("result");
+const appList=document.getElementById("appList");
 
-picker.addEventListener('change',()=>{
- const file=picker.files[0];
+let apps=[];
+try{
+ apps=JSON.parse(localStorage.getItem("tigerApps")||"[]");
+}catch(e){apps=[];}
 
- if(!file){
-  result.textContent="No file selected";
+function saveApps(){
+ localStorage.setItem("tigerApps",JSON.stringify(apps));
+}
+
+function renderApps(){
+ appList.innerHTML="";
+ if(apps.length===0){
+  appList.textContent="No apps added yet.";
   return;
  }
+ apps.forEach((app,index)=>{
+  const row=document.createElement("div");
+  row.className="app-row";
+  const info=document.createElement("div");
+  const name=document.createElement("strong");
+  name.textContent=app.name;
+  const size=document.createElement("small");
+  size.textContent=app.size+" MB";
+  info.append(name,document.createElement("br"),size);
+  const remove=document.createElement("button");
+  remove.className="remove";
+  remove.textContent="Remove";
+  remove.addEventListener("click",()=>{
+   apps.splice(index,1);
+   saveApps();
+   renderApps();
+  });
+  row.append(info,remove);
+  appList.append(row);
+ });
+}
 
- result.textContent=file.name+" • "+
- (file.size/1024/1024).toFixed(2)+" MB";
+picker.addEventListener("change",()=>{
+ const file=picker.files[0];
+ if(!file)return;
+ const size=(file.size/1024/1024).toFixed(2);
+ result.textContent=file.name+" • "+size+" MB";
+ if(!file.name.toLowerCase().endsWith(".ipa")){
+  result.textContent="Please select an IPA file.";
+  return;
+ }
+ apps.push({name:file.name,size:size});
+ saveApps();
+ renderApps();
 });
+
+renderApps();
 
 if("serviceWorker" in navigator){
  window.addEventListener("load",()=>{
@@ -214,6 +167,5 @@ if("serviceWorker" in navigator){
  });
 }
 </script>
-
 </body>
 </html>
