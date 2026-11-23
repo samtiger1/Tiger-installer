@@ -46,19 +46,27 @@ h2{font-size:20px}
  text-align:center;cursor:pointer;
 }
 input[type=file]{display:none}
+.search{
+ width:100%;padding:14px;margin:12px 0;
+ background:#0d121b;border:1px solid #394252;
+ border-radius:12px;color:white;font-size:15px;
+}
 .app-row{
- background:#111620;border:1px solid #303744;
- border-radius:13px;padding:14px;margin:12px 0;
+ background:linear-gradient(145deg,#202735,#121720);
+ border:1px solid #394252;border-radius:15px;
+ padding:15px;margin:12px 0;
  display:flex;justify-content:space-between;
  align-items:center;gap:10px;
 }
 .app-info{min-width:0;overflow-wrap:anywhere}
 .app-name{font-weight:700;display:block;margin-bottom:7px}
-.app-meta{font-size:12px;color:#a0a7b5;line-height:1.7}
-.remove{
+.app-meta{font-size:12px;color:#a0a7b5;line-height:1.8}
+.remove,.clear{
  background:#493039;color:#fff;border:0;
- padding:9px 12px;border-radius:9px;flex-shrink:0;
+ padding:10px 13px;border-radius:9px;flex-shrink:0;
+ font-weight:700;
 }
+.clear{width:100%;margin-top:12px;padding:13px}
 .status{color:#f2b544;font-weight:700}
 footer{text-align:center;color:#788397;margin-top:35px;font-size:12px}
 </style>
@@ -69,14 +77,14 @@ footer{text-align:center;color:#788397;margin-top:35px;font-size:12px}
  <div class="logo">🐯</div>
  <div>
   <h1>TIGER <span class="gold">INSTALLER</span></h1>
-  <small>PERSONAL IPA MANAGER • V2.2</small>
+  <small>PERSONAL IPA MANAGER • V2.3</small>
  </div>
 </header>
 
 <div class="hero">
  <small class="gold">WELCOME TO TIGER INSTALLER</small>
  <h2>Your Apps.<br>Your Control.</h2>
- <p class="muted">Manage your IPA files from one dashboard.</p>
+ <p class="muted">Manage your IPA file details from one dashboard.</p>
 </div>
 
 <div class="card">
@@ -96,8 +104,11 @@ footer{text-align:center;color:#788397;margin-top:35px;font-size:12px}
 </div>
 
 <div class="card">
- <h2>📁 My Apps <span id="appCount" class="gold">0</span></h2>
+ <h2>📁 My Apps</h2>
+ <p class="muted">Total Apps: <strong class="gold" id="appCount">0</strong></p>
+ <input id="search" class="search" type="search" placeholder="🔍 Search your apps...">
  <div id="appList" class="muted">No apps added yet.</div>
+ <button class="clear" id="clearAll">CLEAR ALL APPS</button>
 </div>
 
 <div class="card">
@@ -107,18 +118,20 @@ footer{text-align:center;color:#788397;margin-top:35px;font-size:12px}
  <p class="muted">Actual signing and installation require a separate authorized workflow.</p>
 </div>
 
-<footer>TIGER INSTALLER • V2.2 • MADE FOR iPHONE 🐯</footer>
+<footer>TIGER INSTALLER • V2.3 • MADE FOR iPHONE 🐯</footer>
 
 <script>
 const picker=document.getElementById("ipa");
 const result=document.getElementById("result");
 const appList=document.getElementById("appList");
 const appCount=document.getElementById("appCount");
+const search=document.getElementById("search");
+const clearAll=document.getElementById("clearAll");
 
 let apps=[];
 try{
  apps=JSON.parse(localStorage.getItem("tigerApps")||"[]");
- if(!Array.isArray(apps)) apps=[];
+ if(!Array.isArray(apps))apps=[];
 }catch(e){apps=[];}
 
 function saveApps(){
@@ -126,7 +139,7 @@ function saveApps(){
   localStorage.setItem("tigerApps",JSON.stringify(apps));
   return true;
  }catch(e){
-  result.textContent="Storage full or unavailable. Could not save app details.";
+  result.textContent="Storage unavailable. Changes could not be saved.";
   return false;
  }
 }
@@ -135,12 +148,22 @@ function renderApps(){
  appList.innerHTML="";
  appCount.textContent=apps.length;
 
+ const query=search.value.toLowerCase().trim();
+ const filtered=apps
+  .map((app,index)=>({...app,index}))
+  .filter(app=>(app.name||"").toLowerCase().includes(query));
+
  if(apps.length===0){
   appList.textContent="No apps added yet.";
   return;
  }
 
- apps.forEach((app,index)=>{
+ if(filtered.length===0){
+  appList.textContent="No matching apps found.";
+  return;
+ }
+
+ filtered.forEach(app=>{
   const row=document.createElement("div");
   row.className="app-row";
 
@@ -157,13 +180,12 @@ function renderApps(){
   let date="Date unavailable";
   if(app.date){
    const parsed=new Date(app.date);
-   if(!isNaN(parsed)) date=parsed.toLocaleDateString();
+   if(!isNaN(parsed))date=parsed.toLocaleDateString();
   }
 
   meta.textContent="📦 "+(app.size||"0")+" MB";
   meta.append(document.createElement("br"));
   meta.append("📅 Added: "+date);
-
   info.append(name,meta);
 
   const remove=document.createElement("button");
@@ -171,14 +193,11 @@ function renderApps(){
   remove.textContent="Remove";
 
   remove.addEventListener("click",()=>{
-   const oldApps=[...apps];
-   apps.splice(index,1);
-   if(saveApps()){
-    renderApps();
-   }else{
-    apps=oldApps;
-    renderApps();
-   }
+   const previous=[...apps];
+   apps.splice(app.index,1);
+   if(saveApps())renderApps();
+   else apps=previous;
+   renderApps();
   });
 
   row.append(info,remove);
@@ -190,16 +209,14 @@ picker.addEventListener("change",()=>{
  const file=picker.files[0];
  if(!file)return;
 
- const size=(file.size/1024/1024).toFixed(2);
- result.textContent=file.name+" • "+size+" MB";
-
  if(!file.name.toLowerCase().endsWith(".ipa")){
   result.textContent="Please select an IPA file.";
   picker.value="";
   return;
  }
 
- const oldApps=[...apps];
+ const previous=[...apps];
+ const size=(file.size/1024/1024).toFixed(2);
 
  apps.push({
   name:file.name,
@@ -210,11 +227,31 @@ picker.addEventListener("change",()=>{
  if(saveApps()){
   result.textContent="✓ App details added successfully.";
  }else{
-  apps=oldApps;
+  apps=previous;
  }
 
  renderApps();
  picker.value="";
+});
+
+search.addEventListener("input",renderApps);
+
+clearAll.addEventListener("click",()=>{
+ if(apps.length===0){
+  result.textContent="App list is already empty.";
+  return;
+ }
+
+ if(confirm("Are you sure you want to clear all app entries?")){
+  const previous=[...apps];
+  apps=[];
+  if(saveApps()){
+   result.textContent="All app entries cleared.";
+  }else{
+   apps=previous;
+  }
+  renderApps();
+ }
 });
 
 renderApps();
