@@ -1,0 +1,10 @@
+{
+  "name": "Tiger Installer",
+  "short_name": "Tiger",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#10131c",
+  "theme_color": "#10131c",
+  "description": "Tiger Installer IPA Manager"
+}
